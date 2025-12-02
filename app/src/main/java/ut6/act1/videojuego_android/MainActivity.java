@@ -1,24 +1,42 @@
 package ut6.act1.videojuego_android;
 
+// IMPORTS
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
+import android.view.Window;
+import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
+    // Creamos el objeto que manejara las vistas del videojuego
+    private GameView gameView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        // Eliminamos la barra superior de la aplicación
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        // Ponemos la pantalla completa para mejor visualización del juego
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        // Inicializamos la vista del juego con GameView
+        gameView = new GameView(this);
+
+        // Ponemos como vista en la pantalla a este GameView
+        setContentView(gameView);
+    }
+
+    // Si el usuario suspende la aplicación, pausamos el hilo para ahorrar recursos
+    @Override
+    protected void onPause() {
+        super.onPause();
+        gameView.pause();
+    }
+    // Si el usuario vuelve, reanudamos el hilo
+    @Override
+    protected void onResume() {
+        super.onResume();
+        gameView.resume();
     }
 }
