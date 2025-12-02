@@ -11,6 +11,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.MotionEvent;
 
 /**
  * Esta es la clase que funciona como motor del juego.
@@ -31,6 +32,9 @@ public class GameView extends SurfaceView implements Runnable {
     // Esto es el mapa de bits de la imagen de fondo
     private Bitmap imagenFondo;
     private Paint fondoOscuro;
+
+    // Creamos el mapache
+    private Mapache mapache;
 
     // Variable para parar el juego cuando un objeto colisione con el mapache
     private boolean alive = true;
@@ -53,6 +57,37 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     /**
+     * Funcion que escucha la pantalla y detecta si debemos ir a la izquierda o derecha.
+     *
+     * @param event Recibe el evento que se ha realizado en la pantalla
+     * @return
+     */
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        // Calculamos la mitad de la pantalla
+        int mitad = getWidth() / 2;
+
+        // Comprobamos que sea un toque o slide
+        if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
+            // Si el toque ha sido de la mitad a la izquierda, mover a la izq.
+            if (event.getX() < mitad) {
+                mapache.setMoviendoIzquierda(true);
+            }
+            // Sino mover a la der.
+            else {
+                mapache.setMoviendoDerecha(true);
+            }
+        }
+        // Si no hay toque ni slide parar el movimiento
+        else {
+            mapache.setMoviendoIzquierda(false);
+            mapache.setMoviendoDerecha(false);
+        }
+
+        return true;
+    }
+
+    /**
      * Esta es la función que ejecuta el bucle del juego (actualizar, dibujar, etc.)
      */
     @Override
@@ -69,7 +104,10 @@ public class GameView extends SurfaceView implements Runnable {
     }
 
     private void update() {
-
+        // Si el mapache existe, actualizar su estado
+        if (mapache != null) {
+            mapache.update();
+        }
     }
 
     private void draw() {
@@ -106,8 +144,11 @@ public class GameView extends SurfaceView implements Runnable {
             // Dibujamos el fondo con el filtro oscurecedor y el rectangulo calculado
             canvas.drawBitmap(imagenFondo, null, pantalla, fondoOscuro);
 
-            // AQUÍ DIBUJARÁS AL MAPACHE MÁS ADELANTE
-            // mapache.draw(canvas);
+            // Creamos y dibujamos el mapache
+            if (mapache == null) {
+                mapache = new Mapache(getContext(), anchoPantalla, altoPantalla);
+            }
+            mapache.draw(canvas);
 
             // Desbloqueamos y actualizamos el canvas
             surfaceHolder.unlockCanvasAndPost(canvas);
