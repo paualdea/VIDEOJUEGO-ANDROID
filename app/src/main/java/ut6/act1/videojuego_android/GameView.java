@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.MotionEvent;
+import java.util.ArrayList;
 
 /**
  * Esta es la clase que funciona como motor del juego.
@@ -33,11 +34,16 @@ public class GameView extends SurfaceView implements Runnable {
     private Bitmap imagenFondo;
     private Paint fondoOscuro;
 
-    // Creamos el mapache
+    // Creamos el mapache y el array de objetos
     private Mapache mapache;
+    ArrayList<Objeto> objetos = new ArrayList<>();
 
     // Variable para parar el juego cuando un objeto colisione con el mapache
     private boolean alive = true;
+
+    // Variables tiempo
+    private long lastSpawn = System.currentTimeMillis();
+    private int spawnTime = 1000;
 
     // Constructor de la clase
     public GameView(Context context) {
@@ -108,6 +114,25 @@ public class GameView extends SurfaceView implements Runnable {
         if (mapache != null) {
             mapache.update();
         }
+
+        /*
+            Actualizamos todos los objetos del array
+            (Recorremos el array al reves para evitar un error de indice al borrar un objeto mientras se ejecuta el array)
+         */
+        for (int i = objetos.size() - 1; i >= 0; i--) {
+            Objeto objeto = objetos.get(i);
+
+            // Obtenemos la velocidad del objeto para comprobar si esta fuera de la pantalla
+            int velocidad = objeto.getVelocidad();
+
+            // Si esta fuera de la pantalla, lo borramos
+            if (velocidad == 0) {
+                objetos.remove(objeto);
+            }
+
+            // Actualizamos los objetos en movimiento
+            objeto.update();
+        }
     }
 
     private void draw() {
@@ -149,6 +174,24 @@ public class GameView extends SurfaceView implements Runnable {
                 mapache = new Mapache(getContext(), anchoPantalla, altoPantalla);
             }
             mapache.draw(canvas);
+
+            /*
+            Creamos los objetos cada x tiempo (empieza en 5s)
+            Guardamos el tiempo de ultima creación de objeto y la comparamos con el tiempo actual usando el span que ponemos (5s por defecto)
+               */
+            // TODO añadir augmento dificultad
+            if (System.currentTimeMillis() - lastSpawn > spawnTime) {
+                // Añadimos un nuevo objeto al array 'objetos'
+                objetos.add(new Objeto(getContext(), anchoPantalla, altoPantalla));
+
+                // Actualizamos la variable para que espere otros 5 segundos
+                lastSpawn = System.currentTimeMillis();
+            }
+
+            // Dibujamos todos los objetos
+            for (Objeto objeto : objetos) {
+                objeto.draw(canvas);
+            }
 
             // Desbloqueamos y actualizamos el canvas
             surfaceHolder.unlockCanvasAndPost(canvas);

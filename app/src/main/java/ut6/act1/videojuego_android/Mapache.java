@@ -91,7 +91,7 @@ public class Mapache {
         if (System.currentTimeMillis() - lastFrameTime > frameDuration) {
             currentFrame++;
             if (currentFrame >= COLUMNAS) {
-                currentFrame = 0; // Vuelta a empezar
+                currentFrame = 0;
             }
             lastFrameTime = System.currentTimeMillis();
         }
