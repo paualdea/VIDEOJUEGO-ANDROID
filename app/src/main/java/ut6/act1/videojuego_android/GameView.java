@@ -43,8 +43,8 @@ public class GameView extends SurfaceView implements Runnable {
     private boolean alive = true;
 
     // Variables tiempo
-    private long lastSpawn = System.currentTimeMillis();
-    private int spawnTime = 1000;
+    private long lastSpawn = System.currentTimeMillis(), lastNivel = System.currentTimeMillis();
+    private int spawnTime = 3000, nivelTime = 8000;
 
     // Constructor de la clase
     public GameView(Context context) {
@@ -189,15 +189,29 @@ public class GameView extends SurfaceView implements Runnable {
             mapache.draw(canvas);
 
             /*
-            Creamos los objetos cada x tiempo (empieza en 5s)
-            Guardamos el tiempo de ultima creación de objeto y la comparamos con el tiempo actual usando el span que ponemos (5s por defecto)
-               */
+            Creamos los objetos cada x tiempo (empieza en 3s)
+            Guardamos el tiempo de ultima creación de objeto y la comparamos con el tiempo actual usando el span que ponemos
+            */
             if (System.currentTimeMillis() - lastSpawn > spawnTime) {
                 // Añadimos un nuevo objeto al array 'objetos'
                 objetos.add(new Objeto(getContext(), anchoPantalla, altoPantalla, imagenObstaculos));
 
                 // Actualizamos la variable para que espere otros 5 segundos
                 lastSpawn = System.currentTimeMillis();
+            }
+
+            // Aumentamos la dificultad cada 15 segundos
+            if (System.currentTimeMillis() - lastNivel > nivelTime) {
+                // Ponemos un maximo de dificultad
+                if (spawnTime <= 250) {
+                    spawnTime = 250;
+                } else {
+                    // Quitamos 250ms cada vez
+                    spawnTime -= 250;
+                }
+
+                // Actualizamos la variable para que espere otros 15 segundos
+                lastNivel = System.currentTimeMillis();
             }
 
             // Dibujamos todos los objetos
