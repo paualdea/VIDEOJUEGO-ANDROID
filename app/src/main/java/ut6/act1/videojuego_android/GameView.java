@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.MotionEvent;
@@ -31,10 +32,10 @@ public class GameView extends SurfaceView implements Runnable {
     private Canvas canvas;
     private SurfaceHolder surfaceHolder;
     // Esto es el mapa de bits de la imagen de fondo
-    private Bitmap imagenFondo;
+    private Bitmap imagenFondo, imagenObstaculos, imagenMapache;
     private Paint fondoOscuro;
 
-    // Creamos el mapache y el array de objetos
+    // Creamos el mapache y el array de objetos (y sus hitboxs)
     private Mapache mapache;
     ArrayList<Objeto> objetos = new ArrayList<>();
 
@@ -60,6 +61,11 @@ public class GameView extends SurfaceView implements Runnable {
         fondoOscuro = new Paint();
         fondoOscuro.setColorFilter(new PorterDuffColorFilter(0x80000000, PorterDuff.Mode.SRC_ATOP));
 
+        // Cargamos el spreadsheet de los objetos
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        imagenObstaculos = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstaculos, options);
+        imagenMapache = BitmapFactory.decodeResource(context.getResources(), R.drawable.mapache, options);
     }
 
     /**
@@ -133,6 +139,13 @@ public class GameView extends SurfaceView implements Runnable {
             // Actualizamos los objetos en movimiento
             objeto.update();
         }
+
+        // Comprobamos si hay choque entre objeto y mapache
+        for (Objeto objeto : objetos) {
+            if (Rect.intersects(mapache.getHitbox(), objeto.getHitbox())) {
+                // TODO mandar a pantalla GAMEOVER
+            }
+        }
     }
 
     private void draw() {
@@ -171,7 +184,7 @@ public class GameView extends SurfaceView implements Runnable {
 
             // Creamos y dibujamos el mapache
             if (mapache == null) {
-                mapache = new Mapache(getContext(), anchoPantalla, altoPantalla);
+                mapache = new Mapache(getContext(), anchoPantalla, altoPantalla, imagenMapache);
             }
             mapache.draw(canvas);
 
@@ -179,10 +192,9 @@ public class GameView extends SurfaceView implements Runnable {
             Creamos los objetos cada x tiempo (empieza en 5s)
             Guardamos el tiempo de ultima creación de objeto y la comparamos con el tiempo actual usando el span que ponemos (5s por defecto)
                */
-            // TODO añadir augmento dificultad
             if (System.currentTimeMillis() - lastSpawn > spawnTime) {
                 // Añadimos un nuevo objeto al array 'objetos'
-                objetos.add(new Objeto(getContext(), anchoPantalla, altoPantalla));
+                objetos.add(new Objeto(getContext(), anchoPantalla, altoPantalla, imagenObstaculos));
 
                 // Actualizamos la variable para que espere otros 5 segundos
                 lastSpawn = System.currentTimeMillis();
@@ -192,6 +204,23 @@ public class GameView extends SurfaceView implements Runnable {
             for (Objeto objeto : objetos) {
                 objeto.draw(canvas);
             }
+
+            // --- TODO DEBUG PARA VER HITBOXES (hecho con IA) ---
+//            Paint paintDebug = new Paint();
+//            paintDebug.setColor(android.graphics.Color.RED);
+//            paintDebug.setStyle(Paint.Style.STROKE); // Solo bordes
+//            paintDebug.setStrokeWidth(5); // Borde grueso
+//
+//            // Dibujar hitbox del mapache
+//            if (mapache != null) {
+//                canvas.drawRect(mapache.getHitbox(), paintDebug);
+//            }
+//
+//            // Dibujar hitboxes de los objetos
+//            for (Objeto objeto : objetos) {
+//                canvas.drawRect(objeto.getHitbox(), paintDebug);
+//            }
+            // --- TODO FIN DEBUG ---
 
             // Desbloqueamos y actualizamos el canvas
             surfaceHolder.unlockCanvasAndPost(canvas);

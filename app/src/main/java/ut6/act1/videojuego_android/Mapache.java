@@ -18,17 +18,21 @@ public class Mapache {
     /*
         La variable recorteSprite recorta uno de los frames dentro del spreadsheet
         Por otro lado, la variable destinoSprite muestra ese recorte (escalado) en el juego
+
+        También creamos un Rect para la hitbox del mapache (que será algo mas pequeña que el Rect del sprite)
      */
-    private Rect recorteSpite, destinoSprite;
+    private Rect recorteSpite, destinoSprite, hitbox;
+
+    private int margenX = 64, margenY = 50;
 
     // Variables mapache
     private int mapacheAncho, mapacheAlto, pantallaAncho, escala = 9;
-    private int x, y, velocidad, velocidadMaxima = 25;
+    private int x, y, velocidad, velocidadMaxima = 35;
     // Esta variable sirve para detectar si el mapache está mirando a la derecha o izquierda y asi invertir el spreadsheet para la correcta animación
     private boolean mirandoDerecha = true, movimiento = false;
 
     // Animación
-    private int currentFrame = 0, frameDuration = 80;
+    private int currentFrame = 0, frameDuration = 60;
     private long lastFrameTime;
 
     /**
@@ -38,14 +42,11 @@ public class Mapache {
      * @param context
      * @param pantallaAncho
      */
-    public Mapache(Context context, int pantallaAncho, int pantallaAlto) {
+    public Mapache(Context context, int pantallaAncho, int pantallaAlto, Bitmap sprite) {
         this.pantallaAncho = pantallaAncho;
 
-        // Cargamos el spreadsheet usando BitmapFactory para evitar suavizado borroso de los pixeles
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        // Con esta opcion evitamos que al escalar los pixeles se vean borrosos
-        options.inScaled = false;
-        sprite = BitmapFactory.decodeResource(context.getResources(), R.drawable.mapache, options);
+        // Cargamos el sprite
+        this.sprite = sprite;
 
         // Calculamos el tamaño de cada mapache diviendo entre columnas y filas
         mapacheAncho = sprite.getWidth() / COLUMNAS;
@@ -57,6 +58,8 @@ public class Mapache {
 
         recorteSpite = new Rect();
         destinoSprite = new Rect();
+        hitbox = new Rect();
+
         lastFrameTime = System.currentTimeMillis();
     }
 
@@ -95,6 +98,9 @@ public class Mapache {
             }
             lastFrameTime = System.currentTimeMillis();
         }
+
+        // Establecemos el tamaño de la hitbox en funcion del objeto
+        hitbox.set(x + margenX, y + (margenY * 4), x + (mapacheAncho * escala) - margenX, y + (mapacheAlto * escala));
     }
 
     public void draw(Canvas canvas) {
@@ -155,5 +161,10 @@ public class Mapache {
         } else {
             velocidad = 0;
         }
+    }
+
+    // GETTERS
+    public Rect getHitbox() {
+        return hitbox;
     }
 }

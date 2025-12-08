@@ -19,8 +19,11 @@ public class Objeto {
     /*
         La variable recorteSprite recorta uno de los frames dentro del spreadsheet
         Por otro lado, la variable destinoSprite muestra ese recorte (escalado) en el juego
+
+        También creamos un Rect para la hitbox del objeto (que será algo mas pequeña que el Rect del sprite)
      */
-    private Rect recorteSpite, destinoSprite;
+    private Rect recorteSpite, destinoSprite, hitbox;
+    private int margenX = 20, margenY = 20;
 
     // Variables objeto
     private int objetoAncho, objetoAlto, pantallaAncho, pantallaAlto, escala = 3;
@@ -39,15 +42,12 @@ public class Objeto {
      * @param context
      * @param pantallaAncho
      */
-    public Objeto(Context context, int pantallaAncho, int pantallaAlto) {
+    public Objeto(Context context, int pantallaAncho, int pantallaAlto, Bitmap sprite) {
         this.pantallaAncho = pantallaAncho;
         this.pantallaAlto = pantallaAlto;
 
-        // Cargamos el spreadsheet usando BitmapFactory para evitar suavizado borroso de los pixeles
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        // Con esta opcion evitamos que al escalar los pixeles se vean borrosos
-        options.inScaled = false;
-        sprite = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstaculos, options);
+        // Cargamos el spreadsheet
+        this.sprite = sprite;
 
         // Calculamos el tamaño de cada objeto diviendo entre columnas y filas
         objetoAncho = sprite.getWidth() / COLUMNAS;
@@ -59,7 +59,21 @@ public class Objeto {
 
         recorteSpite = new Rect();
         destinoSprite = new Rect();
+        hitbox = new Rect();
+
         lastFrameTime = System.currentTimeMillis();
+
+        // Elegimos el tipo de objeto con un random
+        int tipoObjeto = random.nextInt(101);
+
+        if (tipoObjeto <= 60) {
+            objetoGrande = false;
+            margenX = 35;
+            margenY = 60;
+        }
+        else {
+            objetoGrande = true;
+        }
     }
 
     public void update() {
@@ -79,6 +93,9 @@ public class Objeto {
             }
             lastFrameTime = System.currentTimeMillis();
         }
+
+        // Establecemos el tamaño de la hitbox en funcion del objeto
+        hitbox.set(x + margenX, y + margenY, x + (objetoAncho / escala) - margenX, y + (objetoAlto / escala) - margenY);
     }
 
     public void draw (Canvas canvas) {
@@ -110,8 +127,12 @@ public class Objeto {
         canvas.drawBitmap(sprite, recorteSpite, destinoSprite, null);
     }
 
-    // GETTER velocidad objeto
+    // GETTERS
     public int getVelocidad() {
         return velocidad;
+    }
+
+    public Rect getHitbox() {
+        return hitbox;
     }
 }
