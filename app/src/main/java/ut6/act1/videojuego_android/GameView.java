@@ -52,6 +52,19 @@ public class GameView extends SurfaceView implements Runnable {
     private Paint paintPuntuacion = new Paint();
     private Typeface fuente;
 
+    // Creamos una interfaz para notificar a la actividad principal del juego
+    public interface gameListener {
+        void onGameOver(int puntos);
+    }
+
+    // Creamos el listener
+    private gameListener listener;
+
+    // Metodo que implementa un listener para la clase de fuera de GameView
+    public void setGameListener (gameListener listener) {
+        this.listener = listener;
+    }
+
     // Constructor de la clase
     public GameView(Context context) {
         super(context);
@@ -164,7 +177,12 @@ public class GameView extends SurfaceView implements Runnable {
         // Comprobamos si hay choque entre objeto y mapache
         for (Objeto objeto : objetos) {
             if (Rect.intersects(mapache.getHitbox(), objeto.getHitbox())) {
-                // TODO mandar a pantalla GAMEOVER
+                alive = false;
+
+                // Notificamos al listener que se acabo el juego
+                if (listener != null) {
+                    listener.onGameOver(puntuacion);
+                }
             }
         }
     }
@@ -174,6 +192,11 @@ public class GameView extends SurfaceView implements Runnable {
         if (surfaceHolder.getSurface().isValid()) {
             // Bloqueamos el canvas para pintar
             canvas = surfaceHolder.lockCanvas();
+
+            // Implementamos este if para evitar errores al intentar reiniciar el juego
+            if (canvas == null) {
+                return;
+            }
 
             // Variable zoom imagen fondo original
             float ZOOM = 1.3f;

@@ -1,15 +1,16 @@
 package ut6.act1.videojuego_android;
 
 // IMPORTS
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-    // Creamos el objeto que manejara las vistas del videojuego
-    private GameView gameView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,23 +21,37 @@ public class MainActivity extends AppCompatActivity {
         // Ponemos la pantalla completa para mejor visualización del juego
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        // Inicializamos la vista del juego con GameView
-        gameView = new GameView(this);
+        // Mostramos el menu principal
+        setContentView(R.layout.activity_main);
 
-        // Ponemos como vista en la pantalla a este GameView
-        setContentView(gameView);
+        // Mapeamos los dos botones
+        Button jugar = findViewById(R.id.jugar);
+        Button salir = findViewById(R.id.salir);
+
+        // Lanzamos el juego al darle al boton
+        jugar.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Creamos el intent para iniciar el juego
+                        Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                        startActivity(intent);
+                    }
+                }
+        );
+
+        // Cerramos la aplicacion al darle al boton
+        salir.setOnClickListener(v -> finish());
     }
 
     // Si el usuario suspende la aplicación, pausamos el hilo para ahorrar recursos
     @Override
     protected void onPause() {
         super.onPause();
-        gameView.pause();
     }
     // Si el usuario vuelve, reanudamos el hilo
     @Override
     protected void onResume() {
         super.onResume();
-        gameView.resume();
     }
 }
