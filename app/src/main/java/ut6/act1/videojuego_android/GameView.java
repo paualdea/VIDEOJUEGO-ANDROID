@@ -9,10 +9,11 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
-import android.util.Log;
+import android.graphics.Typeface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.MotionEvent;
+import androidx.core.content.res.ResourcesCompat;
 import java.util.ArrayList;
 
 /**
@@ -46,6 +47,11 @@ public class GameView extends SurfaceView implements Runnable {
     private long lastSpawn = System.currentTimeMillis(), lastNivel = System.currentTimeMillis();
     private int spawnTime = 3000, nivelTime = 8000;
 
+    // Variable para contabilizar la puntuación y paint para dibujarla
+    private int puntuacion = 0;
+    private Paint paintPuntuacion = new Paint();
+    private Typeface fuente;
+
     // Constructor de la clase
     public GameView(Context context) {
         super(context);
@@ -66,6 +72,18 @@ public class GameView extends SurfaceView implements Runnable {
         options.inScaled = false;
         imagenObstaculos = BitmapFactory.decodeResource(context.getResources(), R.drawable.obstaculos, options);
         imagenMapache = BitmapFactory.decodeResource(context.getResources(), R.drawable.mapache, options);
+
+        // Importamos la fuente del juego
+        fuente = ResourcesCompat.getFont(context, R.font.pixellari);
+
+        // Creamos el estilo del marcador de puntuación
+        paintPuntuacion.setColor(android.graphics.Color.WHITE);
+        paintPuntuacion.setTextSize(90);
+        paintPuntuacion.setTextAlign(Paint.Align.CENTER);
+        paintPuntuacion.setTypeface(fuente);
+
+        // Añadimos sombra sobre este texto (hecho con IA)
+        paintPuntuacion.setShadowLayer(10f, 5f, 5f, android.graphics.Color.BLACK);
     }
 
     /**
@@ -134,6 +152,9 @@ public class GameView extends SurfaceView implements Runnable {
             // Si esta fuera de la pantalla, lo borramos
             if (velocidad == 0) {
                 objetos.remove(objeto);
+
+                // Sumamos puntos por haber evitado el objeto
+                puntuacion += 10;
             }
 
             // Actualizamos los objetos en movimiento
@@ -218,6 +239,9 @@ public class GameView extends SurfaceView implements Runnable {
             for (Objeto objeto : objetos) {
                 objeto.draw(canvas);
             }
+
+            // Dibujamos el marcador de puntuación
+            canvas.drawText("--- " + puntuacion + " ---", getWidth() / 2 , 150, paintPuntuacion);
 
             // --- TODO DEBUG PARA VER HITBOXES (hecho con IA) ---
 //            Paint paintDebug = new Paint();
