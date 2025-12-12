@@ -10,6 +10,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.MotionEvent;
@@ -51,6 +53,10 @@ public class GameView extends SurfaceView implements Runnable {
     private int puntuacion = 0;
     private Paint paintPuntuacion = new Paint();
     private Typeface fuente;
+
+    // Variables audio
+    private MediaPlayer musicaFondo, musicaGameOver;
+
 
     // Creamos una interfaz para notificar a la actividad principal del juego
     public interface gameListener {
@@ -97,6 +103,15 @@ public class GameView extends SurfaceView implements Runnable {
 
         // Añadimos sombra sobre este texto (hecho con IA)
         paintPuntuacion.setShadowLayer(10f, 5f, 5f, android.graphics.Color.BLACK);
+
+        // Cargamos la musica de fondo
+        musicaFondo = MediaPlayer.create(context, R.raw.music);
+        musicaFondo.setLooping(true);
+        musicaFondo.setVolume(0.6f, 0.6f);
+
+        // Cargamos el audio de game over
+        musicaGameOver = MediaPlayer.create(context, R.raw.gameover);
+        musicaFondo.setVolume(0.9f, 0.9f);
     }
 
     /**
@@ -178,6 +193,12 @@ public class GameView extends SurfaceView implements Runnable {
         for (Objeto objeto : objetos) {
             if (Rect.intersects(mapache.getHitbox(), objeto.getHitbox())) {
                 alive = false;
+
+                // Paramos la musica
+                musicaFondo.stop();
+
+                // Ponemos el sonido de gameover
+                musicaGameOver.start();
 
                 // Notificamos al listener que se acabo el juego
                 if (listener != null) {
@@ -306,6 +327,11 @@ public class GameView extends SurfaceView implements Runnable {
         // Creamos e iniciamos el hilo del juego
         hiloJuego = new Thread(this);
         hiloJuego.start();
+
+        // Iniciamos la musica
+        if (musicaFondo != null) {
+            musicaFondo.start();
+        }
     }
     public void pause() {
         alive = false;
