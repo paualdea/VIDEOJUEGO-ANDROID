@@ -335,6 +335,10 @@ public class GameView extends SurfaceView implements Runnable {
     }
     public void pause() {
         alive = false;
+
+        // Paramos la musica
+        musicaFondo.pause();
+
         try {
             // Detenemos el hilo del juego antes de volver a la actividad principal
             hiloJuego.join();
