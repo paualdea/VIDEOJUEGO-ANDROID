@@ -1,6 +1,6 @@
 # Racoon Rush (Videojuego Android)
 
-<img width="963" height="468" alt="imagen" src="https://github.com/user-attachments/assets/5763e3ea-67f3-40e9-86b2-03b6e25eff7b" />
+<img width="321" height="156" alt="imagen" src="https://github.com/user-attachments/assets/5763e3ea-67f3-40e9-86b2-03b6e25eff7b" />
 
 <br>
 
