@@ -1,5 +1,7 @@
 # Racoon Rush (Videojuego Android)
 
+<img width="963" height="468" alt="imagen" src="https://github.com/user-attachments/assets/5763e3ea-67f3-40e9-86b2-03b6e25eff7b" />
+
 Este proyecto es un videojuego 2D sencillo desarrollado como parte de la **Actividad 1: "Crea tu primer mini-juego 'Evita los obstáculos'"** de la asignatura de **Programación Multimedia y Dispositivos Móviles**.
 
 El juego consiste en controlar un personaje que se desplaza horizontalmente para esquivar obstáculos que caen desde la parte superior de la pantalla. La generación de obstáculos es aleatoria y la dificultad aumenta progresivamente.
