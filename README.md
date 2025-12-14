@@ -26,5 +26,5 @@ El objetivo principal es poner en práctica la lógica de videojuegos en Android
 3.  Ejecuta la aplicación normalmente.
 
 ---
-_Este proyecto sirve como control de versiones y evidencia del trabajo realizado para la asignatura._
+Este proyecto sirve como control de versiones y evidencia del trabajo realizado para la asignatura.
 ---
