@@ -117,6 +117,7 @@ public class Mapache {
             srcY = mapacheAlto;
         }
 
+        // Calculamos el recorte del sprite en el spritesheet
         recorteSpite.left = srcX;
         recorteSpite.top = srcY;
         recorteSpite.right = srcX + mapacheAncho;
